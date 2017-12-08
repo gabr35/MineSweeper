@@ -22,8 +22,28 @@ public class BenutzerScnhitStelle {
         System.out.println("Mit 'e' können Sie das Spiel beenden");
     }
 
+    public void explodiert() {
+        System.out.println("Sie haben eine Miene aufgedeckt");
+    }
+
+    public void gewonnen() {
+        System.out.println("Sie haben das Spiel gewonnen !!!!");
+    }
+
     public void beenden() {
         System.out.println("Sie haben das Spiel beendet");
+    }
+
+    public boolean nochmalSpielen() {
+        boolean antwort = false;
+        System.out.println("Wollen sie noch mal Spielen? y/n");
+        String eingabe = scanner.nextLine();
+        if (eingabe.equals("y") || eingabe.equals("Y")) {
+            antwort = true;
+        } else if (eingabe.equals("n") || eingabe.equals("N")) {
+            antwort = false;
+        }
+        return antwort;
     }
 
     public void readConsole() {
@@ -93,6 +113,7 @@ public class BenutzerScnhitStelle {
 
         System.out.println();
         System.out.println("Markierung übrig: " + spielfeld.getMarkierungen());
+        System.out.println("Richtig Markiert: " + spielfeld.getRichtigMarkiert());
 
     }
 }

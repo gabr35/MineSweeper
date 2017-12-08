@@ -1,17 +1,17 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 public class Spielfeld {
 
     private int bomben = 10;
+    private boolean explosion = false;
+    private boolean beendet = false;
     private int aufgedeckt = 0;
     private int markierungen = 10;
     private int richtigMarkiert = 0;
 
     private Zelle[][] zellen = new Zelle[8][8];
-    private BenutzerScnhitStelle scnhitStelle = new BenutzerScnhitStelle(this);
+    //private BenutzerScnhitStelle scnhitStelle = new BenutzerScnhitStelle(this);
 
     public void generate() {
 
@@ -45,74 +45,9 @@ public class Spielfeld {
             Zelle[] nachbarsZellen = getNachbarsZellen(xKordinate, yKordinate);
 
             for (Zelle zelle : nachbarsZellen) {
+                if (!zelle.isBombe())
                 zelle.addGrenztAn(1);
             }
-
-//            //Für die mitte des Spielfelds
-//            if (xKordinate > 0 && yKordinate > 0 && xKordinate < 7 && yKordinate < 7) {
-//                for (int j = -1; j < 2; j++) {
-//                    for (int k = -1; k < 2; k++) {
-//                        zellen[xKordinate + j][yKordinate + k].addGrenztAn(1);
-//                    }
-//                }
-//            //Für den oberen Rand
-//            } else if (xKordinate > 0 && yKordinate == 0 && xKordinate < 7) {
-//                for (int j = -1; j < 2; j++) {
-//                    for (int k = 0; k < 2; k++) {
-//                        zellen[xKordinate + j][yKordinate + k].addGrenztAn(1);
-//                    }
-//                }
-//            //Für den unteren Rand
-//            } else if (xKordinate > 0 && yKordinate == 7 && xKordinate < 7) {
-//                for (int j = -1; j < 2; j++) {
-//                    for (int k = -1; k < 1; k++) {
-//                        zellen[xKordinate + j][yKordinate + k].addGrenztAn(1);
-//                    }
-//                }
-//            //Für den linken Rand
-//            } else if (xKordinate == 0 && yKordinate > 0 && yKordinate < 7) {
-//                for (int j = 0; j < 2; j++) {
-//                    for (int k = -1; k < 2; k++) {
-//                        zellen[xKordinate + j][yKordinate + k].addGrenztAn(1);
-//                    }
-//                }
-//            //Für den rechten Rand
-//            } else if (xKordinate == 7 && yKordinate > 0 && yKordinate < 7) {
-//                for (int j = -1; j < 1; j++) {
-//                    for (int k = -1; k < 2; k++) {
-//                        zellen[xKordinate + j][yKordinate + k].addGrenztAn(1);
-//                    }
-//                }
-//            //Oben links
-//            } else if (xKordinate == 0 && yKordinate == 0) {
-//                for (int j = 0; j < 2; j++) {
-//                    for (int k = 0; k < 2; k++) {
-//                        zellen[xKordinate + j][yKordinate + k].addGrenztAn(1);
-//                    }
-//                }
-//            //Oben rechts
-//            } else if (xKordinate == 7 && yKordinate == 0) {
-//                for (int j = -1; j < 1; j++) {
-//                    for (int k = 0; k < 2; k++) {
-//                        zellen[xKordinate + j][yKordinate + k].addGrenztAn(1);
-//                    }
-//                }
-//            //Unten rechts
-//            } else if (xKordinate == 7 && yKordinate == 7) {
-//                for (int j = -1; j < 1; j++) {
-//                    for (int k = -1; k < 1; k++) {
-//                        zellen[xKordinate + j][yKordinate + k].addGrenztAn(1);
-//                    }
-//                }
-//            //Unten links
-//            } else if (xKordinate == 0 && yKordinate == 7) {
-//                for (int j = 0; j < 2; j++) {
-//                    for (int k = -1; k < 1; k++) {
-//                        zellen[xKordinate + j][yKordinate + k].addGrenztAn(1);
-//                    }
-//                }
-//            }
-
         }
     }
 
@@ -126,11 +61,20 @@ public class Spielfeld {
         }
         switch (parts[0]) {
             case "m":
-                if (markierungen > 0) {
+                if (zellen[xKordinate][yKordinate].isMarkiert() && zellen[xKordinate][yKordinate].isBombe()) {
                     zellen[xKordinate][yKordinate].markieren();
-                    markierungen--;
-                    if (zellen[xKordinate][yKordinate].isBombe()) {
-                        richtigMarkiert++;
+                    markierungen++;
+                    richtigMarkiert--;
+                } else if (zellen[xKordinate][yKordinate].isMarkiert()) {
+                    zellen[xKordinate][yKordinate].markieren();
+                    markierungen++;
+                } else if (!zellen[xKordinate][yKordinate].isMarkiert()) {
+                    if (markierungen > 0) {
+                        zellen[xKordinate][yKordinate].markieren();
+                        markierungen--;
+                        if (zellen[xKordinate][yKordinate].isBombe()) {
+                            richtigMarkiert++;
+                        }
                     }
                 }
                 System.out.println(zellen[xKordinate][yKordinate].toString());
@@ -141,19 +85,21 @@ public class Spielfeld {
                 System.out.println(zellen[xKordinate][yKordinate].toString());
                 break;
             case "e":
-                System.exit(1);
+                beendet = true;
+                break;
         }
     }
 
     public void zellenAufdecken(int xKordinate, int yKordinate) {
 
         if (zellen[xKordinate][yKordinate].isBombe()) {
-            scnhitStelle.beenden();
-            System.exit(1);
+            explosion = true;
+            //System.exit(1);
         }
 
         if (zellen[xKordinate][yKordinate].getGrenztAn() > 0) {
             zellen[xKordinate][yKordinate].aufdecken();
+            aufgedeckt++;
         } else {
 
             Zelle[] nachbarsZellen = getNachbarsZellen(xKordinate, yKordinate);
@@ -194,78 +140,6 @@ public class Spielfeld {
         return nachbarsZellen.toArray(new Zelle[nachbarsZellen.size()]);
     }
 
-//    public Zelle[] getNachbarsZellen(int xKordinate, int yKordinate) {
-//
-//        List<Zelle> nachbarsZellen = new ArrayList<>();
-//        //Zelle[] nachbarsZellen;
-//
-//        //Für die mitte des Spielfelds
-//        if (xKordinate > 0 && yKordinate > 0 && xKordinate < 7 && yKordinate < 7) {
-//            for (int j = -1; j < 2; j++) {
-//                for (int k = -1; k < 2; k++) {
-//                    nachbarsZellen.add(zellen[xKordinate + j][yKordinate + k]);
-//                }
-//            }
-//            //Für den oberen Rand
-//        } else if (xKordinate > 0 && yKordinate == 0 && xKordinate < 7) {
-//            for (int j = -1; j < 2; j++) {
-//                for (int k = 0; k < 2; k++) {
-//                    nachbarsZellen.add(zellen[xKordinate + j][yKordinate + k]);
-//                }
-//            }
-//            //Für den unteren Rand
-//        } else if (xKordinate > 0 && yKordinate == 7 && xKordinate < 7) {
-//            for (int j = -1; j < 2; j++) {
-//                for (int k = -1; k < 1; k++) {
-//                    nachbarsZellen.add(zellen[xKordinate + j][yKordinate + k]);
-//                }
-//            }
-//            //Für den linken Rand
-//        } else if (xKordinate == 0 && yKordinate > 0 && yKordinate < 7) {
-//            for (int j = 0; j < 2; j++) {
-//                for (int k = -1; k < 2; k++) {
-//                    nachbarsZellen.add(zellen[xKordinate + j][yKordinate + k]);
-//                }
-//            }
-//            //Für den rechten Rand
-//        } else if (xKordinate == 7 && yKordinate > 0 && yKordinate < 7) {
-//            for (int j = -1; j < 1; j++) {
-//                for (int k = -1; k < 2; k++) {
-//                    nachbarsZellen.add(zellen[xKordinate + j][yKordinate + k]);
-//                }
-//            }
-//            //Oben links
-//        } else if (xKordinate == 0 && yKordinate == 0) {
-//            for (int j = 0; j < 2; j++) {
-//                for (int k = 0; k < 2; k++) {
-//                    nachbarsZellen.add(zellen[xKordinate + j][yKordinate + k]);
-//                }
-//            }
-//            //Oben rechts
-//        } else if (xKordinate == 7 && yKordinate == 0) {
-//            for (int j = -1; j < 1; j++) {
-//                for (int k = 0; k < 2; k++) {
-//                    nachbarsZellen.add(zellen[xKordinate + j][yKordinate + k]);
-//                }
-//            }
-//            //Unten rechts
-//        } else if (xKordinate == 7 && yKordinate == 7) {
-//            for (int j = -1; j < 1; j++) {
-//                for (int k = -1; k < 1; k++) {
-//                    nachbarsZellen.add(zellen[xKordinate + j][yKordinate + k]);
-//                }
-//            }
-//            //Unten links
-//        } else if (xKordinate == 0 && yKordinate == 7) {
-//            for (int j = 0; j < 2; j++) {
-//                for (int k = -1; k < 1; k++) {
-//                    nachbarsZellen.add(zellen[xKordinate + j][yKordinate + k]);
-//                }
-//            }
-//        }
-//
-//        return nachbarsZellen.toArray(new Zelle[nachbarsZellen.size()]);
-//    }
 
     public Zelle[][] getZellen() {
         return zellen;
@@ -277,5 +151,17 @@ public class Spielfeld {
 
     public int getRichtigMarkiert() {
         return richtigMarkiert;
+    }
+
+    public int getAufgedeckt() {
+        return aufgedeckt;
+    }
+
+    public boolean isBeendet() {
+        return beendet;
+    }
+
+    public boolean isExplosion() {
+        return explosion;
     }
 }
