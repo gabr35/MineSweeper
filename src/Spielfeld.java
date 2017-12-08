@@ -9,14 +9,47 @@ public class Spielfeld {
     private int aufgedeckt = 0;
     private int markierungen = 10;
     private int richtigMarkiert = 0;
-
     private Zelle[][] zellen = new Zelle[8][8];
     //private BenutzerScnhitStelle scnhitStelle = new BenutzerScnhitStelle(this);
+
+    public void generateSpielFeld() {
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                zellen[i][j] = new Zelle(false, i, j);
+            }
+        }
+
+        generateBomben();
+    }
+
+    public void generateBomben() {
+
+        Random random = new Random();
+        int xKordinate;
+        int yKordinate;
+
+        //Generiert Bomben
+        for (int i = 0; i < bomben; i++) {
+
+            do {
+                xKordinate = random.nextInt(8);
+                yKordinate = random.nextInt(8);
+            } while (zellen[xKordinate][yKordinate].isBombe());
+            zellen[xKordinate][yKordinate].setBombe(true);
+
+            //Zählt die angrenzungen der Bomben an den Nahchbarnfelder
+            Zelle[] nachbarsZellen = getNachbarsZellen(xKordinate, yKordinate);
+            for (Zelle zelle : nachbarsZellen) {
+                if (!zelle.isBombe())
+                    zelle.addGrenztAn(1);
+            }
+        }
+    }
 
     public void generate() {
 
         Random random = new Random();
-        int counter = 0;
         String[] kordinaten = new String[16];
         int xKordinate;
         int yKordinate;
@@ -24,7 +57,6 @@ public class Spielfeld {
             for (int j = 0; j < 8; j++) {
                 zellen[i][j] = new Zelle(false, i, j);
             }
-
         }
 
 
@@ -51,7 +83,7 @@ public class Spielfeld {
         }
     }
 
-    public void selechtZelle(String[] parts) {
+    public void selectZelle(String[] parts) {
 
         int xKordinate = 0;
         int yKordinate = 0;
@@ -59,24 +91,10 @@ public class Spielfeld {
             xKordinate = Integer.parseInt(parts[1]);
             yKordinate = Integer.parseInt(parts[2]);
         }
+
         switch (parts[0]) {
             case "m":
-                if (zellen[xKordinate][yKordinate].isMarkiert() && zellen[xKordinate][yKordinate].isBombe()) {
-                    zellen[xKordinate][yKordinate].markieren();
-                    markierungen++;
-                    richtigMarkiert--;
-                } else if (zellen[xKordinate][yKordinate].isMarkiert()) {
-                    zellen[xKordinate][yKordinate].markieren();
-                    markierungen++;
-                } else if (!zellen[xKordinate][yKordinate].isMarkiert()) {
-                    if (markierungen > 0) {
-                        zellen[xKordinate][yKordinate].markieren();
-                        markierungen--;
-                        if (zellen[xKordinate][yKordinate].isBombe()) {
-                            richtigMarkiert++;
-                        }
-                    }
-                }
+                markiereFeld(xKordinate, yKordinate);
                 System.out.println(zellen[xKordinate][yKordinate].toString());
                 break;
             case "t":
@@ -90,35 +108,54 @@ public class Spielfeld {
         }
     }
 
+    public void markiereFeld(int xKordinate, int yKordinate) {
+
+        if (zellen[xKordinate][yKordinate].isMarkiert() && zellen[xKordinate][yKordinate].isBombe()) {
+            zellen[xKordinate][yKordinate].markieren();
+            markierungen++;
+            richtigMarkiert--;
+        } else if (zellen[xKordinate][yKordinate].isMarkiert()) {
+            zellen[xKordinate][yKordinate].markieren();
+            markierungen++;
+        } else if (!zellen[xKordinate][yKordinate].isMarkiert()) {
+            if (markierungen > 0) {
+                zellen[xKordinate][yKordinate].markieren();
+                markierungen--;
+                if (zellen[xKordinate][yKordinate].isBombe()) {
+                    richtigMarkiert++;
+                }
+            }
+        }
+    }
+
     public void zellenAufdecken(int xKordinate, int yKordinate) {
 
         if (zellen[xKordinate][yKordinate].isBombe()) {
             explosion = true;
             //System.exit(1);
-        }
-
-        if (zellen[xKordinate][yKordinate].getGrenztAn() > 0) {
-            zellen[xKordinate][yKordinate].aufdecken();
-            aufgedeckt++;
         } else {
+            if (zellen[xKordinate][yKordinate].getGrenztAn() > 0 && !zellen[xKordinate][yKordinate].isAufgedeckt()) {
+                zellen[xKordinate][yKordinate].aufdecken();
+                aufgedeckt++;
+            } else {
+                Zelle[] nachbarsZellen = getNachbarsZellen(xKordinate, yKordinate);
 
-            Zelle[] nachbarsZellen = getNachbarsZellen(xKordinate, yKordinate);
-
-            for (Zelle zelle : nachbarsZellen) {
-                //Wenn die zelle keine Bombe ist oder noch nicht aufgedeckt ist und an einer Bombe grenzt
-                //wird diese einfach aufgedeckt
-                if ((!zelle.isBombe() || !zelle.isAufgedeckt()) && zelle.getGrenztAn() != 0) {
-                    zelle.aufdecken();
-                    aufgedeckt++;
-                }
-                //Ist die Zelle keine Bombe und grenzt an keiner bombe und ist nicht schon aufgedekct
-                //so werden wieder die nachbars zellen aufgedeckt bis es die Zellen an einer Bombe grenzen.
-                //Hier wir die Funktion rekursiv immer wieder aufgerufen solange die Zelle alle Nachbaren
-                //ohne Bombe aufgedeckt hat.
-                if (zelle.getGrenztAn() == 0 && !zelle.isBombe() && !zelle.isAufgedeckt()) {
-                    zelle.aufdecken();
-                    aufgedeckt++;
-                    zellenAufdecken(zelle.getxKordinate(), zelle.getyKoridnate());
+                for (Zelle zelle : nachbarsZellen) {
+                    //Wenn die zelle keine Bombe ist oder noch nicht aufgedeckt ist und an einer Bombe grenzt
+                    //wird diese einfach aufgedeckt
+                    if ((!zelle.isBombe() && !zelle.isAufgedeckt()) && zelle.getGrenztAn() != 0) {
+                        zelle.aufdecken();
+                        aufgedeckt++;
+                    }
+                    //Ist die Zelle keine Bombe und grenzt an keiner bombe und ist nicht schon aufgedekct
+                    //so werden wieder die nachbars zellen aufgedeckt bis es die Zellen an einer Bombe grenzen.
+                    //Hier wir die Funktion rekursiv immer wieder aufgerufen solange die Zelle alle Nachbaren
+                    //ohne Bombe aufgedeckt hat.
+                    if (zelle.getGrenztAn() == 0 && !zelle.isBombe() && !zelle.isAufgedeckt()) {
+                        zelle.aufdecken();
+                        aufgedeckt++;
+                        zellenAufdecken(zelle.getxKordinate(), zelle.getyKoridnate());
+                    }
                 }
             }
         }

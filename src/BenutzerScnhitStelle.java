@@ -50,10 +50,10 @@ public class BenutzerScnhitStelle {
         String eingabe = scanner.nextLine();
         String[] parts = eingabe.split(" ");
         System.out.print(Arrays.asList(parts).toString());
-        spielfeld.selechtZelle(parts);
+        spielfeld.selectZelle(parts);
     }
 
-    public void displayFeldDev() {
+    public void displayFeldLösung() {
 
         System.out.print(" ");
         for (int i = 0; i < 8; i++) {
@@ -70,8 +70,6 @@ public class BenutzerScnhitStelle {
                 if (spielfeld.getZellen()[j][i].isBombe()) {
                     System.out.print("*  ");
                     counter++;
-                } else if (spielfeld.getZellen()[j][i].isMarkiert()) {
-                    System.out.print("!  ");
                 } else {
                     System.out.print(spielfeld.getZellen()[j][i].getGrenztAn() + "  ");
                 }
@@ -79,9 +77,7 @@ public class BenutzerScnhitStelle {
             }
             System.out.println();
         }
-
         System.out.println();
-        System.out.println("Bomben ingesamt: " + counter);
 
     }
 
