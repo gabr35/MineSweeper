@@ -6,6 +6,9 @@ import java.util.Random;
 public class Spielfeld {
 
     private int bomben = 10;
+    private int aufgedeckt = 0;
+    private int markierungen = 10;
+    private int richtigMarkiert = 0;
 
     private Zelle[][] zellen = new Zelle[8][8];
     private BenutzerScnhitStelle scnhitStelle = new BenutzerScnhitStelle(this);
@@ -123,7 +126,13 @@ public class Spielfeld {
         }
         switch (parts[0]) {
             case "m":
-                zellen[xKordinate][yKordinate].markieren();
+                if (markierungen > 0) {
+                    zellen[xKordinate][yKordinate].markieren();
+                    markierungen--;
+                    if (zellen[xKordinate][yKordinate].isBombe()) {
+                        richtigMarkiert++;
+                    }
+                }
                 System.out.println(zellen[xKordinate][yKordinate].toString());
                 break;
             case "t":
@@ -154,6 +163,7 @@ public class Spielfeld {
                 //wird diese einfach aufgedeckt
                 if ((!zelle.isBombe() || !zelle.isAufgedeckt()) && zelle.getGrenztAn() != 0) {
                     zelle.aufdecken();
+                    aufgedeckt++;
                 }
                 //Ist die Zelle keine Bombe und grenzt an keiner bombe und ist nicht schon aufgedekct
                 //so werden wieder die nachbars zellen aufgedeckt bis es die Zellen an einer Bombe grenzen.
@@ -161,13 +171,14 @@ public class Spielfeld {
                 //ohne Bombe aufgedeckt hat.
                 if (zelle.getGrenztAn() == 0 && !zelle.isBombe() && !zelle.isAufgedeckt()) {
                     zelle.aufdecken();
+                    aufgedeckt++;
                     zellenAufdecken(zelle.getxKordinate(), zelle.getyKoridnate());
                 }
             }
         }
     }
 
-    public Zelle[] getNachbarsZellen(int x, int y) {
+    private Zelle[] getNachbarsZellen(int x, int y) {
 
         ArrayList<Zelle> nachbarsZellen = new ArrayList<>();
 
@@ -258,5 +269,13 @@ public class Spielfeld {
 
     public Zelle[][] getZellen() {
         return zellen;
+    }
+
+    public int getMarkierungen() {
+        return markierungen;
+    }
+
+    public int getRichtigMarkiert() {
+        return richtigMarkiert;
     }
 }

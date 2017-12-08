@@ -92,7 +92,7 @@ public class BenutzerScnhitStelle {
         }
 
         System.out.println();
-        System.out.println("Bomben ingesamt: " + counter);
+        System.out.println("Markierung übrig: " + spielfeld.getMarkierungen());
 
     }
 }
