@@ -66,16 +66,21 @@ public class BenutzerScnhitStelle {
 
         String eingabe = "";
 
-        if (args.length == 3) {
-            if (args[0].equals("t") || args[0].equals("m")) {
-                if (Integer.parseInt(args[1]) > 8
-                        || Integer.parseInt(args[1]) < 0 || Integer.parseInt(args[2]) > 8 || Integer.parseInt(args[2]) < 0) {
-                    eingabe = "!!!!Eingabe nicht gültig!!!!";
+        try {
+            if (args.length == 3) {
+                if (args[0].equals("t") || args[0].equals("m")) {
+                    if (Integer.parseInt(args[1]) > 8
+                            || Integer.parseInt(args[1]) < 0 || Integer.parseInt(args[2]) > 8 || Integer.parseInt(args[2]) < 0) {
+                        eingabe = "!!!!Eingabe nicht gültig!!!!";
+                    }
                 }
+            } else if (args[0].equals("e")) {
+                eingabe = "";
+            } else {
+                eingabe = "!!!!Eingabe nicht gültig!!!!";
             }
-        } else if (args[0].equals("e")) {
-            eingabe = "";
-        } else {
+        } catch (NumberFormatException e) {
+            //e.printStackTrace();
             eingabe = "!!!!Eingabe nicht gültig!!!!";
         }
         return eingabe;
