@@ -24,7 +24,7 @@ public class MineSweeper {
             }
 
             scnhitStelle.willkommen();
-            while (((spielfeld.getRichtigMarkiert() != 10 || spielfeld.getAufgedeckt() != 54) && !spielfeld.isExplosion()) && !spielfeld.isBeendet()) {
+            while (((spielfeld.getMarkierungen() != 0 || spielfeld.getAufgedeckt() != 54) && !spielfeld.isExplosion()) && !spielfeld.isBeendet()) {
                 scnhitStelle.displayFeldLösung();
                 System.out.println();
                 scnhitStelle.displayFeld();

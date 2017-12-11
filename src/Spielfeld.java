@@ -8,7 +8,7 @@ public class Spielfeld {
     private boolean beendet = false;
     private int aufgedeckt = 0;
     private int markierungen = 10;
-    private int richtigMarkiert = 0;
+    //private int richtigMarkiert = 0;
     private Zelle[][] zellen = new Zelle[8][8];
     //private BenutzerScnhitStelle scnhitStelle = new BenutzerScnhitStelle(this);
 
@@ -108,25 +108,38 @@ public class Spielfeld {
         }
     }
 
+//    public void markiereFeld(int xKordinate, int yKordinate) {
+//
+//        if (zellen[xKordinate][yKordinate].isMarkiert() && zellen[xKordinate][yKordinate].isBombe()) {
+//            zellen[xKordinate][yKordinate].markieren();
+//            markierungen++;
+//            richtigMarkiert--;
+//        } else if (zellen[xKordinate][yKordinate].isMarkiert()) {
+//            zellen[xKordinate][yKordinate].markieren();
+//            markierungen++;
+//        } else if (!zellen[xKordinate][yKordinate].isMarkiert()) {
+//            if (markierungen > 0) {
+//                zellen[xKordinate][yKordinate].markieren();
+//                markierungen--;
+//                if (zellen[xKordinate][yKordinate].isBombe()) {
+//                    richtigMarkiert++;
+//                }
+//            }
+//        }
+//    }
+
     public void markiereFeld(int xKordinate, int yKordinate) {
 
-        if (zellen[xKordinate][yKordinate].isMarkiert() && zellen[xKordinate][yKordinate].isBombe()) {
-            zellen[xKordinate][yKordinate].markieren();
+        Zelle zelle = zellen[xKordinate][yKordinate];
+        if (!zelle.isMarkiert()) {
+            markierungen--;
+        } else {
             markierungen++;
-            richtigMarkiert--;
-        } else if (zellen[xKordinate][yKordinate].isMarkiert()) {
-            zellen[xKordinate][yKordinate].markieren();
-            markierungen++;
-        } else if (!zellen[xKordinate][yKordinate].isMarkiert()) {
-            if (markierungen > 0) {
-                zellen[xKordinate][yKordinate].markieren();
-                markierungen--;
-                if (zellen[xKordinate][yKordinate].isBombe()) {
-                    richtigMarkiert++;
-                }
-            }
         }
+        zelle.markieren();
     }
+
+
 
     public void zellenAufdecken(int xKordinate, int yKordinate) {
 
@@ -186,9 +199,9 @@ public class Spielfeld {
         return markierungen;
     }
 
-    public int getRichtigMarkiert() {
-        return richtigMarkiert;
-    }
+//    public int getRichtigMarkiert() {
+//        return richtigMarkiert;
+//    }
 
     public int getAufgedeckt() {
         return aufgedeckt;

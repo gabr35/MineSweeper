@@ -142,7 +142,7 @@ public class BenutzerScnhitStelle {
 
         System.out.println();
         System.out.println("Markierung übrig: " + spielfeld.getMarkierungen());
-        System.out.println("Richtig Markiert: " + spielfeld.getRichtigMarkiert());
+        //System.out.println("Richtig Markiert: " + spielfeld.getRichtigMarkiert());
 
     }
 }
