@@ -41,11 +41,11 @@ public class Zelle {
         return grenztAn;
     }
 
-    public int getxKordinate() {
+    public int getXKordinate() {
         return xKordinate;
     }
 
-    public int getyKoridnate() {
+    public int getYKoridnate() {
         return yKoridnate;
     }
 

@@ -4,7 +4,6 @@ import java.util.Scanner;
 public class BenutzerScnhitStelle {
 
     private final Scanner scanner = new Scanner(System.in);
-
     private Spielfeld spielfeld;
 
     public BenutzerScnhitStelle(Spielfeld spielfeld) {
@@ -47,10 +46,39 @@ public class BenutzerScnhitStelle {
     }
 
     public void readConsole() {
+
         String eingabe = scanner.nextLine();
-        String[] parts = eingabe.split(" ");
-        System.out.print(Arrays.asList(parts).toString());
-        spielfeld.selectZelle(parts);
+        String[] args = eingabe.split(" ");
+
+        String meldung = validate(args);
+        while (!meldung.equals("") ) {
+            System.out.println(meldung);
+            spielRegeln();
+            eingabe = scanner.nextLine();
+            args = eingabe.split(" ");
+            meldung = validate(args);
+        }
+        System.out.print(Arrays.asList(args).toString());
+        spielfeld.selectZelle(args);
+    }
+
+    public String validate(String[] args) {
+
+        String eingabe = "";
+
+        if (args.length == 3) {
+            if (args[0].equals("t") || args[0].equals("m")) {
+                if (Integer.parseInt(args[1]) > 8
+                        || Integer.parseInt(args[1]) < 0 || Integer.parseInt(args[2]) > 8 || Integer.parseInt(args[2]) < 0) {
+                    eingabe = "!!!!Eingabe nicht gültig!!!!";
+                }
+            }
+        } else if (args[0].equals("e")) {
+            eingabe = "";
+        } else {
+            eingabe = "!!!!Eingabe nicht gültig!!!!";
+        }
+        return eingabe;
     }
 
     public void displayFeldLösung() {

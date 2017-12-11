@@ -83,16 +83,16 @@ public class Spielfeld {
         }
     }
 
-    public void selectZelle(String[] parts) {
+    public void selectZelle(String[] args) {
 
         int xKordinate = 0;
         int yKordinate = 0;
-        if (parts.length == 3) {
-            xKordinate = Integer.parseInt(parts[1]);
-            yKordinate = Integer.parseInt(parts[2]);
+        if (args.length == 3) {
+            xKordinate = Integer.parseInt(args[1]);
+            yKordinate = Integer.parseInt(args[2]);
         }
 
-        switch (parts[0]) {
+        switch (args[0]) {
             case "m":
                 markiereFeld(xKordinate, yKordinate);
                 System.out.println(zellen[xKordinate][yKordinate].toString());
@@ -154,7 +154,7 @@ public class Spielfeld {
                     if (zelle.getGrenztAn() == 0 && !zelle.isBombe() && !zelle.isAufgedeckt()) {
                         zelle.aufdecken();
                         aufgedeckt++;
-                        zellenAufdecken(zelle.getxKordinate(), zelle.getyKoridnate());
+                        zellenAufdecken(zelle.getXKordinate(), zelle.getYKoridnate());
                     }
                 }
             }
